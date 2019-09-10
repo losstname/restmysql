@@ -49,4 +49,54 @@ class RestmysqlApplicationTests {
 		Assert.assertNotEquals(0, customers.size())
 	}
 
+	@Test
+	void getCustomer_return200() throws Exception {
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/customer/1")
+				.accept(MediaType.APPLICATION_JSON)
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn()
+
+		Customer customer = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Customer.class)
+		Assert.assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value())
+		Assert.assertEquals(1l, customer.id)
+	}
+
+	@Test
+	void postNewCustomer_return200(){
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/customer/new")
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("name", "Customer 4")
+				.param("email", "customer4@gmail.com")
+				.param("age", "23")
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn()
+
+		Customer customer = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Customer.class)
+		Assert.assertEquals(result.getResponse().getStatus(), HttpStatus.OK.value())
+		Assert.assertNotNull(customer)
+	}
+
+	@Test
+	void postUpdateCustomer_return200(){
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.post("/customer/1")
+				.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+				.param("name", "Customer 5")
+				.param("email", "customer4@gmail.com")
+				.param("age", "19")
+
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn()
+
+		Customer customer = new ObjectMapper().readValue(result.getResponse().getContentAsString(), Customer.class)
+		Assert.assertEquals(HttpStatus.OK.value() ,result.getResponse().getStatus())
+		Assert.assertNotNull(customer)
+		Assert.assertEquals(1l, customer.id)
+	}
+
+	@Test
+	void deleteCustomer_return200(){
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.delete("/customer/2")
+		MvcResult result = mockMvc.perform(requestBuilder).andReturn()
+		Assert.assertEquals(HttpStatus.OK.value() ,result.getResponse().getStatus())
+	}
+
 }
